@@ -72,6 +72,19 @@
             font-size: 13px; color: var(--text-secondary);
             white-space: nowrap; flex-shrink: 0;
         }
+        /* ===== 操作栏（话题+按钮） ===== */
+        .action-bar {
+            background: var(--card-bg); padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0;
+        }
+        .action-bar input[type="text"] {
+            flex: 1; border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px 12px; font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        .action-bar input:focus { border-color: var(--primary); }
         .chat-area {
             flex: 1; overflow-y: auto; padding: 16px;
             -webkit-overflow-scrolling: touch;
@@ -114,6 +127,16 @@
             border-radius: 8px; max-width: 100%; text-align: center; margin: 0 auto;
         }
         .message.system { justify-content: center; }
+        .msg-thinking {
+            color: #999; font-size: 13px; font-style: italic;
+        }
+        .msg-thinking::after { content: ''; animation: dots 1.5s infinite; }
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+        }
         .msg-typing { display: inline-block; }
         .msg-typing::after { content: '▋'; animation: blink 0.8s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -135,23 +158,19 @@
         }
         .input-bar textarea:focus { border-color: var(--primary); }
         .send-btn, .auto-btn, .stop-btn, .new-topic-btn {
-            border: none; border-radius: 8px; padding: 10px 14px;
-            font-size: 14px; font-weight: 500; cursor: pointer;
-            white-space: nowrap; transition: all 0.2s; height: 42px;
+            border: none; border-radius: 8px; padding: 8px 14px;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            white-space: nowrap; transition: all 0.2s; height: 38px;
         }
         .send-btn { background: var(--primary); color: white; }
         .send-btn:hover { background: var(--primary-dark); }
         .send-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .auto-btn {
-            background: #6c5ce7; color: white;
-        }
+        .auto-btn { background: #6c5ce7; color: white; }
         .auto-btn:hover { background: #5b4cdb; }
         .auto-btn:disabled { background: #ccc; cursor: not-allowed; }
         .stop-btn { background: #e74c3c; color: white; }
         .stop-btn:hover { background: #c0392b; }
-        .new-topic-btn {
-            background: #fd7e14; color: white;
-        }
+        .new-topic-btn { background: #fd7e14; color: white; }
         .new-topic-btn:hover { background: #e8690b; }
         .settings-panel {
             flex: 1; overflow-y: auto; padding: 16px;
@@ -221,7 +240,7 @@
             display: block; font-size: 14px; font-weight: 500;
             margin-bottom: 6px; color: var(--text-secondary);
         }
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input, .form-group textarea {
             width: 100%; border: 1px solid var(--border); border-radius: 8px;
             padding: 10px 14px; font-size: 15px; font-family: inherit;
             outline: none; transition: border-color 0.2s;
@@ -274,25 +293,6 @@
             flex: 1; padding: 10px; border-radius: 8px;
             font-size: 15px; cursor: pointer; border: none;
         }
-        .auto-chat-bar {
-            background: var(--card-bg); padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            display: none; align-items: center; gap: 8px;
-            flex-shrink: 0;
-        }
-        .auto-chat-bar.show { display: flex; }
-        .auto-chat-bar input {
-            flex: 1; border: 1px solid var(--border); border-radius: 8px;
-            padding: 8px 12px; font-size: 14px; outline: none;
-        }
-        .auto-chat-bar input:focus { border-color: var(--primary); }
-        .auto-chat-bar label {
-            font-size: 13px; color: var(--text-secondary);
-            white-space: nowrap; display: flex; align-items: center; gap: 4px;
-        }
-        .auto-chat-bar label input[type="checkbox"] {
-            width: auto; border: none; padding: 0;
-        }
     </style>
 </head>
 <body>
@@ -312,23 +312,22 @@
         <div class="members-bar" id="membersBar">
             <span class="member-count">加载中...</span>
         </div>
-        <!-- 自动群聊控制栏 -->
-        <div class="auto-chat-bar" id="autoChatBar">
-            <input type="text" id="topicInput" placeholder="输入话题（可留空）...">
-            <label><input type="checkbox" id="topicOnly" checked> 仅话题</label>
+        <!-- 操作栏：话题输入 + 群聊/停止/新话题按钮 -->
+        <div class="action-bar" id="actionBar">
+            <input type="text" id="topicInput" placeholder="输入话题让 AI 讨论...">
+            <button class="auto-btn" id="autoBtn" onclick="startAutoChat()">🎭 群聊</button>
+            <button class="stop-btn" id="stopBtn" onclick="stopAutoChat()" style="display:none">⏹ 停止</button>
+            <button class="new-topic-btn" id="newTopicBtn" onclick="newTopic()">🔄</button>
         </div>
         <div class="chat-area" id="chatArea">
             <div class="empty-state" id="emptyChat">
                 <div class="emoji">💬</div>
-                <p>还没有消息<br>发一条消息开始群聊吧！</p>
+                <p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p>
             </div>
         </div>
         <div class="input-bar" id="inputBar">
             <textarea id="msgInput" placeholder="输入消息..." rows="1" onkeydown="handleKey(event)"></textarea>
             <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
-            <button class="auto-btn" id="autoBtn" onclick="startAutoChat()">🎭 群聊</button>
-            <button class="stop-btn" id="stopBtn" onclick="stopAutoChat()" style="display:none">⏹ 停止</button>
-            <button class="new-topic-btn" id="newTopicBtn" onclick="newTopic()">🔄 新话题</button>
         </div>
     </div>
 
@@ -400,8 +399,6 @@
 <script>
 let agents = [];
 let isStreaming = false;
-let autoMode = false;
-let currentAbort = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadAgents();
@@ -425,7 +422,6 @@ async function loadAgents() {
         const res = await fetch('/api/agents');
         agents = await res.json();
         renderMembersBar();
-        updateAutoChatBar();
     } catch (e) { console.error('加载角色失败:', e); }
 }
 
@@ -441,15 +437,6 @@ function renderMembersBar() {
         html += `<span class="member-chip"><span class="avatar">${a.avatar}</span> ${a.name}</span>`;
     });
     bar.innerHTML = html;
-}
-
-function updateAutoChatBar() {
-    const bar = document.getElementById('autoChatBar');
-    if (agents.length >= 2) {
-        bar.classList.add('show');
-    } else {
-        bar.classList.remove('show');
-    }
 }
 
 function renderAgentList() {
@@ -600,10 +587,32 @@ function addRoundIndicator(round) {
     scrollToBottom();
 }
 
-function addStreamingBubble(msgId, agentId, agentName, agentAvatar) {
+// 思考状态气泡
+function addThinkingBubble(msgId, agentName, agentAvatar) {
     const area = document.getElementById('chatArea');
     const empty = document.getElementById('emptyChat');
     empty.style.display = 'none';
+    const div = document.createElement('div');
+    div.className = 'message assistant';
+    div.id = `thinking-${msgId}`;
+    div.innerHTML = `
+        <div class="msg-avatar">${agentAvatar}</div>
+        <div class="msg-body">
+            <div class="msg-name">${escapeHtml(agentName)}</div>
+            <div class="msg-bubble"><span class="msg-thinking">正在思考中...</span></div>
+        </div>`;
+    area.appendChild(div);
+    scrollToBottom();
+}
+
+function removeThinkingBubble(msgId) {
+    const div = document.getElementById(`thinking-${msgId}`);
+    if (div) div.remove();
+}
+
+function addStreamingBubble(msgId, agentId, agentName, agentAvatar) {
+    removeThinkingBubble(msgId);
+    const area = document.getElementById('chatArea');
     const div = document.createElement('div');
     div.className = 'message assistant';
     div.id = `stream-${msgId}`;
@@ -647,9 +656,7 @@ async function sendMessage() {
     input.style.height = 'auto';
 
     addMessageToChat({ role: 'user', agent_name: '我', agent_avatar: '😊', content });
-    isStreaming = true;
-    document.getElementById('sendBtn').disabled = true;
-    document.getElementById('autoBtn').disabled = true;
+    setStreaming(true);
 
     try {
         const res = await fetch('/api/messages', {
@@ -663,29 +670,23 @@ async function sendMessage() {
             if (data.ai_count === 0) {
                 addMessageToChat({ role:'system', agent_name:'系统', agent_avatar:'📢', content:'还没有 AI 成员哦，去群设置添加吧！' });
             }
-            isStreaming = false;
-            document.getElementById('sendBtn').disabled = false;
-            document.getElementById('autoBtn').disabled = false;
+            setStreaming(false);
             return;
         }
         await processSSE(res);
     } catch (e) {
         addMessageToChat({ role:'system', agent_name:'系统', agent_avatar:'⚠️', content:'发送失败: ' + e.message });
     }
-    isStreaming = false;
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('autoBtn').disabled = false;
+    setStreaming(false);
 }
 
 // ========== 自动群聊 ==========
 function startAutoChat() {
     const topic = document.getElementById('topicInput').value.trim();
-    autoMode = true;
-    isStreaming = true;
+    setStreaming(true);
 
     document.getElementById('autoBtn').style.display = 'none';
     document.getElementById('stopBtn').style.display = 'block';
-    document.getElementById('sendBtn').disabled = true;
     document.getElementById('topicInput').disabled = true;
 
     fetch('/api/auto-chat', {
@@ -693,9 +694,7 @@ function startAutoChat() {
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ session_id: 'default', topic, max_rounds: 15 }),
     }).then(res => {
-        if (!res.ok) {
-            return res.json().then(data => { throw new Error(data.error || '启动失败'); });
-        }
+        if (!res.ok) return res.json().then(data => { throw new Error(data.error || '启动失败'); });
         return processSSE(res);
     }).then(() => {
         stopAutoChatUI();
@@ -717,13 +716,16 @@ async function stopAutoChat() {
 }
 
 function stopAutoChatUI() {
-    autoMode = false;
-    isStreaming = false;
+    setStreaming(false);
     document.getElementById('autoBtn').style.display = 'block';
     document.getElementById('stopBtn').style.display = 'none';
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('autoBtn').disabled = false;
     document.getElementById('topicInput').disabled = false;
+}
+
+function setStreaming(val) {
+    isStreaming = val;
+    document.getElementById('sendBtn').disabled = val;
+    document.getElementById('autoBtn').disabled = val;
 }
 
 // ========== SSE 处理 ==========
@@ -746,6 +748,9 @@ async function processSSE(res) {
             try {
                 const data = JSON.parse(jsonStr);
                 switch (data.type) {
+                    case 'agent_thinking':
+                        addThinkingBubble(data.msg_id, data.agent_name, data.agent_avatar);
+                        break;
                     case 'agent_start':
                         addStreamingBubble(data.msg_id, data.agent_id, data.agent_name, data.agent_avatar);
                         break;
@@ -756,6 +761,7 @@ async function processSSE(res) {
                         finishStreamBubble(data.msg_id);
                         break;
                     case 'agent_error':
+                        removeThinkingBubble(data.msg_id);
                         finishStreamBubble(data.msg_id);
                         appendToStreamBubble(data.msg_id, data.content);
                         break;
@@ -777,7 +783,7 @@ async function newTopic() {
         document.getElementById('chatArea').innerHTML = `
             <div class="empty-state" id="emptyChat">
                 <div class="emoji">💬</div>
-                <p>新话题已开启<br>发消息或点击🎭群聊开始吧！</p>
+                <p>新话题已开启<br>输入消息或点🎭群聊开始吧！</p>
             </div>`;
         showToast('已开启新话题');
     } catch (e) { showToast('操作失败'); }
@@ -790,7 +796,7 @@ function clearChat() {
             document.getElementById('chatArea').innerHTML = `
                 <div class="empty-state" id="emptyChat">
                     <div class="emoji">💬</div>
-                    <p>还没有消息<br>发一条消息开始群聊吧！</p>
+                    <p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p>
                 </div>`;
             showToast('聊天记录已清空');
         } catch (e) { showToast('清空失败'); }

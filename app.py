@@ -3,6 +3,7 @@ import json
 import os
 import uuid
 import time
+import random
 import httpx
 import threading
 from flask import Flask, request, jsonify, send_from_directory, Response, stream_with_context
@@ -51,6 +52,45 @@ def init_db():
     conn.close()
 
 init_db()
+
+# ========== 初始化默认 AI 角色 ==========
+def init_default_agents():
+    conn = get_db()
+    count = conn.execute('SELECT COUNT(*) FROM agents').fetchone()[0]
+    if count == 0:
+        # 只在数据库为空时创建默认角色
+        defaults = [
+            {
+                'id': 'default-1',
+                'name': '小助手',
+                'avatar': '🤖',
+                'system_prompt': '你是一个友善热情的AI助手，名叫小助手。你说话风格活泼开朗，喜欢用表情符号。你擅长解答各种问题，总是乐于帮助别人。在群聊中你会主动和其他人互动。',
+                'api_base': 'https://api.deepseek.com/v1',
+                'api_key': 'sk-78efc6fbedaf402e9ccd85487c00ac2b',
+                'model': 'deepseek-chat',
+                'sort_order': 0,
+            },
+            {
+                'id': 'default-2',
+                'name': '小智',
+                'avatar': '🧠',
+                'system_prompt': '你是一个沉稳睿智的AI助手，名叫小智。你说话风格冷静理性，喜欢深入分析问题。你有丰富的知识储备，在群聊中你会从不同角度思考问题，给出有深度的见解。',
+                'api_base': 'https://api.deepseek.com/v1',
+                'api_key': 'sk-174ccba7f307416aa916e4234b569143',
+                'model': 'deepseek-chat',
+                'sort_order': 1,
+            },
+        ]
+        for a in defaults:
+            conn.execute(
+                'INSERT INTO agents (id, name, avatar, system_prompt, api_base, api_key, model, sort_order) VALUES (?,?,?,?,?,?,?,?)',
+                (a['id'], a['name'], a['avatar'], a['system_prompt'], a['api_base'], a['api_key'], a['model'], a['sort_order'])
+            )
+        conn.commit()
+        print("[Init] ✅ 已创建 2 个默认 AI 角色：小助手、小智")
+    conn.close()
+
+init_default_agents()
 
 # ========== 页面路由 ==========
 
@@ -228,6 +268,11 @@ def stream_single_reply(session_id, agent):
     """单个 AI 回复一次"""
     msg_id = f"{agent['id']}-{uuid.uuid4().hex[:6]}"
     try:
+        # 模拟思考延迟 1-3 秒
+        think_time = random.uniform(1.0, 3.0)
+        yield f"data: {json.dumps({'type': 'agent_thinking', 'msg_id': msg_id, 'agent_id': agent['id'], 'agent_name': agent['name'], 'agent_avatar': agent['avatar'], 'think_time': round(think_time, 1)}, ensure_ascii=False)}\n\n"
+        time.sleep(think_time)
+
         yield f"data: {json.dumps({'type': 'agent_start', 'msg_id': msg_id, 'agent_id': agent['id'], 'agent_name': agent['name'], 'agent_avatar': agent['avatar']}, ensure_ascii=False)}\n\n"
 
         # 获取聊天历史（限制最近30条，防止token超限）

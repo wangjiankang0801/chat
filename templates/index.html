@@ -19,363 +19,152 @@
             height: 100vh; height: 100dvh; overflow: hidden;
             display: flex; flex-direction: column;
         }
-        .header {
-            background: var(--card-bg); padding: 12px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 100;
-        }
+        .header { background: var(--card-bg); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .header h1 { font-size: 18px; font-weight: 600; }
-        .header-btn {
-            background: none; border: none; font-size: 22px;
-            cursor: pointer; padding: 4px 8px; border-radius: 6px;
-            transition: background 0.2s;
-        }
+        .header-btn { background: none; border: none; font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
         .header-btn:hover { background: var(--bg); }
-        .tab-bar {
-            display: flex; background: var(--card-bg);
-            border-bottom: 1px solid var(--border); flex-shrink: 0;
-        }
-        .tab-btn {
-            flex: 1; padding: 12px; text-align: center; font-size: 15px;
-            font-weight: 500; border: none; background: none;
-            cursor: pointer; color: var(--text-secondary);
-            position: relative; transition: color 0.2s;
-        }
+        .tab-bar { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; font-size: 15px; font-weight: 500; border: none; background: none; cursor: pointer; color: var(--text-secondary); position: relative; }
         .tab-btn.active { color: var(--primary); }
-        .tab-btn.active::after {
-            content: ''; position: absolute; bottom: 0;
-            left: 30%; right: 30%; height: 3px;
-            background: var(--primary); border-radius: 2px;
-        }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 30%; right: 30%; height: 3px; background: var(--primary); border-radius: 2px; }
         .tab-content { flex: 1; overflow: hidden; position: relative; }
-        .tab-panel {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            display: none; flex-direction: column;
-        }
+        .tab-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; }
         .tab-panel.active { display: flex; }
-        .members-bar {
-            background: var(--card-bg); padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 8px;
-            overflow-x: auto; flex-shrink: 0;
-            -webkit-overflow-scrolling: touch;
-        }
+        .members-bar { background: var(--card-bg); padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; overflow-x: auto; flex-shrink: 0; }
         .members-bar::-webkit-scrollbar { display: none; }
-        .member-chip {
-            display: flex; align-items: center; gap: 4px;
-            background: var(--bg); padding: 6px 12px;
-            border-radius: 20px; font-size: 13px;
-            white-space: nowrap; flex-shrink: 0;
-        }
+        .member-chip { display: flex; align-items: center; gap: 4px; background: var(--bg); padding: 6px 12px; border-radius: 20px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
         .member-chip .avatar { font-size: 18px; }
-        .member-count {
-            font-size: 13px; color: var(--text-secondary);
-            white-space: nowrap; flex-shrink: 0;
-        }
-        /* ===== 操作栏（话题+按钮） ===== */
-        .action-bar {
-            background: var(--card-bg); padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 8px;
-            flex-shrink: 0;
-        }
-        .action-bar input[type="text"] {
-            flex: 1; border: 1px solid var(--border); border-radius: 8px;
-            padding: 8px 12px; font-size: 14px; outline: none;
-            transition: border-color 0.2s;
-        }
+        .member-count { font-size: 13px; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0; }
+        .action-bar { background: var(--card-bg); padding: 8px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .action-bar input[type="text"] { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; }
         .action-bar input:focus { border-color: var(--primary); }
-        .chat-area {
-            flex: 1; overflow-y: auto; padding: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .chat-area::-webkit-scrollbar { width: 4px; }
-        .chat-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
-        .message {
-            display: flex; gap: 10px; margin-bottom: 16px;
-            max-width: 100%; animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .chat-area { flex: 1; overflow-y: auto; padding: 16px; }
+        .message { display: flex; gap: 10px; margin-bottom: 16px; max-width: 100%; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { flex-direction: row-reverse; }
-        .msg-avatar {
-            font-size: 36px; flex-shrink: 0; width: 42px;
-            text-align: center; line-height: 42px;
-        }
+        .msg-avatar { font-size: 36px; flex-shrink: 0; width: 42px; text-align: center; line-height: 42px; }
         .msg-body { max-width: 72%; min-width: 60px; }
-        .msg-name {
-            font-size: 12px; color: var(--text-secondary);
-            margin-bottom: 4px; padding: 0 4px;
-        }
+        .msg-name { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; padding: 0 4px; }
         .message.user .msg-name { text-align: right; }
-        .msg-bubble {
-            padding: 10px 14px; border-radius: 12px;
-            font-size: 15px; line-height: 1.6;
-            word-break: break-word; white-space: pre-wrap; position: relative;
-        }
-        .message.user .msg-bubble {
-            background: var(--user-bubble); border-top-right-radius: 4px;
-        }
-        .message.assistant .msg-bubble {
-            background: var(--ai-bubble); border-top-left-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-        }
-        .message.system .msg-bubble {
-            background: #fff3cd; color: #856404; font-size: 13px;
-            border-radius: 8px; max-width: 100%; text-align: center; margin: 0 auto;
-        }
+        .msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 15px; line-height: 1.6; word-break: break-word; white-space: pre-wrap; }
+        .message.user .msg-bubble { background: var(--user-bubble); border-top-right-radius: 4px; }
+        .message.assistant .msg-bubble { background: var(--ai-bubble); border-top-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .message.system .msg-bubble { background: #fff3cd; color: #856404; font-size: 13px; border-radius: 8px; text-align: center; margin: 0 auto; }
         .message.system { justify-content: center; }
-        .msg-thinking {
-            color: #999; font-size: 13px; font-style: italic;
-        }
+        .msg-thinking { color: #999; font-size: 13px; font-style: italic; }
         .msg-thinking::after { content: ''; animation: dots 1.5s infinite; }
-        @keyframes dots {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-        }
-        .msg-typing { display: inline-block; }
+        @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
         .msg-typing::after { content: '▋'; animation: blink 0.8s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .round-indicator {
-            text-align: center; padding: 8px; margin: 8px 0;
-            font-size: 12px; color: var(--text-secondary);
-            background: var(--bg); border-radius: 12px;
-        }
-        .input-bar {
-            background: var(--card-bg); border-top: 1px solid var(--border);
-            padding: 10px 12px; display: flex; gap: 8px;
-            align-items: flex-end; flex-shrink: 0;
-        }
-        .input-bar textarea {
-            flex: 1; border: 1px solid var(--border); border-radius: 8px;
-            padding: 10px 14px; font-size: 15px; font-family: inherit;
-            resize: none; outline: none; max-height: 120px; min-height: 42px;
-            line-height: 1.4; transition: border-color 0.2s;
-        }
+        .round-indicator { text-align: center; padding: 8px; margin: 8px 0; font-size: 12px; color: var(--text-secondary); background: var(--bg); border-radius: 12px; }
+        .input-bar { background: var(--card-bg); border-top: 1px solid var(--border); padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+        .input-bar textarea { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 15px; font-family: inherit; resize: none; outline: none; max-height: 120px; min-height: 42px; line-height: 1.4; }
         .input-bar textarea:focus { border-color: var(--primary); }
-        .send-btn, .auto-btn, .stop-btn, .new-topic-btn {
-            border: none; border-radius: 8px; padding: 8px 14px;
-            font-size: 13px; font-weight: 500; cursor: pointer;
-            white-space: nowrap; transition: all 0.2s; height: 38px;
-        }
-        .send-btn { background: var(--primary); color: white; }
-        .send-btn:hover { background: var(--primary-dark); }
-        .send-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .auto-btn { background: #6c5ce7; color: white; }
-        .auto-btn:hover { background: #5b4cdb; }
-        .auto-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .stop-btn { background: #e74c3c; color: white; }
-        .stop-btn:hover { background: #c0392b; }
-        .new-topic-btn { background: #fd7e14; color: white; }
-        .new-topic-btn:hover { background: #e8690b; }
-        .settings-panel {
-            flex: 1; overflow-y: auto; padding: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .agent-card {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-        }
-        .agent-card-header {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-        }
+        .btn { border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; height: 38px; }
+        .btn:disabled { background: #ccc !important; cursor: not-allowed; }
+        .btn-send { background: var(--primary); color: white; }
+        .btn-auto { background: #6c5ce7; color: white; }
+        .btn-stop { background: #e74c3c; color: white; }
+        .btn-new { background: #fd7e14; color: white; }
+        .settings-panel { flex: 1; overflow-y: auto; padding: 16px; }
+        .agent-card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+        .agent-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .agent-card-avatar { font-size: 40px; flex-shrink: 0; }
         .agent-card-info { flex: 1; min-width: 0; }
         .agent-card-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-        .agent-card-model {
-            font-size: 12px; color: var(--text-secondary);
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
+        .agent-card-model { font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .agent-card-actions { display: flex; gap: 8px; }
-        .agent-card-actions button {
-            background: none; border: 1px solid var(--border);
-            border-radius: 6px; padding: 6px 12px; font-size: 13px;
-            cursor: pointer; transition: all 0.2s;
-        }
+        .agent-card-actions button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
         .agent-card-actions .edit-btn { color: var(--primary); border-color: var(--primary); }
-        .agent-card-actions .edit-btn:hover { background: var(--primary); color: white; }
         .agent-card-actions .delete-btn { color: #e74c3c; border-color: #e74c3c; }
-        .agent-card-actions .delete-btn:hover { background: #e74c3c; color: white; }
-        .agent-card-prompt {
-            font-size: 13px; color: var(--text-secondary); line-height: 1.5;
-            max-height: 60px; overflow: hidden; text-overflow: ellipsis;
-            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-        }
-        .add-agent-btn {
-            width: 100%; padding: 16px; background: var(--card-bg);
-            border: 2px dashed var(--border); border-radius: 12px;
-            font-size: 16px; color: var(--primary); cursor: pointer;
-            transition: all 0.2s; margin-bottom: 12px;
-        }
+        .agent-card-prompt { font-size: 13px; color: var(--text-secondary); line-height: 1.5; max-height: 60px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+        .add-agent-btn { width: 100%; padding: 16px; background: var(--card-bg); border: 2px dashed var(--border); border-radius: 12px; font-size: 16px; color: var(--primary); cursor: pointer; margin-bottom: 12px; }
         .add-agent-btn:hover { border-color: var(--primary); background: #f0fff4; }
-        .clear-btn {
-            width: 100%; padding: 14px; background: #fff;
-            border: 1px solid #e74c3c; border-radius: 12px;
-            font-size: 15px; color: #e74c3c; cursor: pointer;
-            transition: all 0.2s; margin-top: 8px;
-        }
-        .clear-btn:hover { background: #e74c3c; color: white; }
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            display: none; align-items: flex-end; justify-content: center;
-        }
+        .clear-btn { width: 100%; padding: 14px; background: #fff; border: 1px solid #e74c3c; border-radius: 12px; font-size: 15px; color: #e74c3c; cursor: pointer; margin-top: 8px; }
+        .preset-card { background: var(--card-bg); border: 1px dashed var(--primary); border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .preset-card:hover { background: #f0fff4; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: flex-end; justify-content: center; }
         .modal-overlay.show { display: flex; }
-        .modal {
-            background: var(--card-bg); border-radius: 16px 16px 0 0;
-            width: 100%; max-width: 500px; max-height: 85vh;
-            overflow-y: auto; padding: 20px; animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
+        .modal { background: var(--card-bg); border-radius: 16px 16px 0 0; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; padding: 20px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modal h2 { font-size: 18px; margin-bottom: 20px; text-align: center; }
         .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block; font-size: 14px; font-weight: 500;
-            margin-bottom: 6px; color: var(--text-secondary);
-        }
-        .form-group input, .form-group textarea {
-            width: 100%; border: 1px solid var(--border); border-radius: 8px;
-            padding: 10px 14px; font-size: 15px; font-family: inherit;
-            outline: none; transition: border-color 0.2s;
-        }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+        .form-group input, .form-group textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 15px; font-family: inherit; outline: none; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
         .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-group .hint {
-            font-size: 12px; color: var(--text-secondary); margin-top: 4px;
-        }
+        .form-group .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
         .form-row { display: flex; gap: 12px; }
         .form-row .form-group { flex: 1; }
         .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-        .modal-actions button {
-            flex: 1; padding: 12px; border-radius: 8px;
-            font-size: 16px; font-weight: 500;
-            cursor: pointer; border: none; transition: all 0.2s;
-        }
+        .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; border: none; }
         .modal-actions .cancel-btn { background: var(--bg); color: var(--text); }
         .modal-actions .save-btn { background: var(--primary); color: white; }
-        .modal-actions .save-btn:hover { background: var(--primary-dark); }
-        .empty-state {
-            text-align: center; padding: 60px 20px; color: var(--text-secondary);
-        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
         .empty-state .emoji { font-size: 64px; margin-bottom: 16px; }
         .empty-state p { font-size: 15px; line-height: 1.6; }
-        .toast {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.75); color: white;
-            padding: 12px 24px; border-radius: 8px;
-            font-size: 14px; z-index: 2000;
-            display: none; animation: fadeIn 0.3s ease;
-        }
-        @media (min-width: 768px) {
-            body { max-width: 500px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
-        }
-        .confirm-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 1500;
-            display: none; align-items: center; justify-content: center;
-        }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.75); color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 2000; display: none; }
+        @media (min-width: 768px) { body { max-width: 500px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); } }
+        .confirm-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; align-items: center; justify-content: center; }
         .confirm-overlay.show { display: flex; }
-        .confirm-box {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 24px; width: 280px; text-align: center;
-        }
+        .confirm-box { background: var(--card-bg); border-radius: 12px; padding: 24px; width: 280px; text-align: center; }
         .confirm-box p { font-size: 16px; margin-bottom: 20px; }
         .confirm-box .confirm-actions { display: flex; gap: 12px; }
-        .confirm-box .confirm-actions button {
-            flex: 1; padding: 10px; border-radius: 8px;
-            font-size: 15px; cursor: pointer; border: none;
-        }
+        .confirm-box .confirm-actions button { flex: 1; padding: 10px; border-radius: 8px; font-size: 15px; cursor: pointer; border: none; }
     </style>
 </head>
 <body>
-
 <div class="header">
     <h1>💬 AI 群聊</h1>
     <button class="header-btn" onclick="clearChat()" title="清空聊天">🗑️</button>
 </div>
-
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('chat')">💬 聊天</button>
     <button class="tab-btn" onclick="switchTab('settings')">⚙️ 群设置</button>
 </div>
-
 <div class="tab-content">
     <div class="tab-panel active" id="panel-chat">
-        <div class="members-bar" id="membersBar">
-            <span class="member-count">加载中...</span>
-        </div>
-        <!-- 操作栏：话题输入 + 群聊/停止/新话题按钮 -->
-        <div class="action-bar" id="actionBar">
+        <div class="members-bar" id="membersBar"><span class="member-count">加载中...</span></div>
+        <div class="action-bar">
             <input type="text" id="topicInput" placeholder="输入话题让 AI 讨论...">
-            <button class="auto-btn" id="autoBtn" onclick="startAutoChat()">🎭 群聊</button>
-            <button class="stop-btn" id="stopBtn" onclick="stopAutoChat()" style="display:none">⏹ 停止</button>
-            <button class="new-topic-btn" id="newTopicBtn" onclick="newTopic()">🔄</button>
+            <button class="btn btn-auto" id="autoBtn" onclick="startAutoChat()">🎭 群聊</button>
+            <button class="btn btn-stop" id="stopBtn" onclick="stopAutoChat()" style="display:none">⏹ 停止</button>
+            <button class="btn btn-new" onclick="newTopic()">🔄</button>
         </div>
         <div class="chat-area" id="chatArea">
-            <div class="empty-state" id="emptyChat">
-                <div class="emoji">💬</div>
-                <p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p>
-            </div>
+            <div class="empty-state" id="emptyChat"><div class="emoji">💬</div><p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p></div>
         </div>
-        <div class="input-bar" id="inputBar">
+        <div class="input-bar">
             <textarea id="msgInput" placeholder="输入消息..." rows="1" onkeydown="handleKey(event)"></textarea>
-            <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+            <button class="btn btn-send" id="sendBtn" onclick="sendMessage()">发送</button>
         </div>
     </div>
-
     <div class="tab-panel" id="panel-settings">
         <div class="settings-panel">
-            <button class="add-agent-btn" onclick="openAddModal()">➕ 添加 AI 成员</button>
+            <div id="presetSection" style="display:none; margin-bottom:16px;">
+                <h3 style="font-size:15px; margin-bottom:12px; color:var(--text-secondary)">📦 推荐角色（点击添加）</h3>
+                <div id="presetList"></div>
+            </div>
+            <button class="add-agent-btn" onclick="openAddModal()">➕ 自定义添加 AI 成员</button>
             <div id="agentList"></div>
             <button class="clear-btn" onclick="clearChat()">🗑️ 清空聊天记录</button>
         </div>
     </div>
 </div>
-
 <div class="modal-overlay" id="agentModal">
     <div class="modal">
         <h2 id="modalTitle">添加 AI 成员</h2>
         <input type="hidden" id="editAgentId">
         <div class="form-row">
-            <div class="form-group">
-                <label>昵称</label>
-                <input type="text" id="agentName" placeholder="如：诸葛亮">
-            </div>
-            <div class="form-group">
-                <label>头像 Emoji</label>
-                <input type="text" id="agentAvatar" placeholder="🧙‍♂️" maxlength="4">
-            </div>
+            <div class="form-group"><label>昵称</label><input type="text" id="agentName" placeholder="如：诸葛亮"></div>
+            <div class="form-group"><label>头像 Emoji</label><input type="text" id="agentAvatar" placeholder="🧙‍♂️" maxlength="4"></div>
         </div>
-        <div class="form-group">
-            <label>角色人设</label>
-            <textarea id="agentPrompt" placeholder="你是三国时期的蜀汉丞相诸葛亮，字孔明..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>API 地址</label>
-            <input type="text" id="agentApiBase" placeholder="https://api.deepseek.com/v1">
-            <div class="hint">兼容 OpenAI 格式的 API 地址，如 DeepSeek、OpenAI 等</div>
-        </div>
-        <div class="form-group">
-            <label>API Key</label>
-            <input type="password" id="agentApiKey" placeholder="sk-...">
-        </div>
+        <div class="form-group"><label>角色人设</label><textarea id="agentPrompt" placeholder="你是三国时期的蜀汉丞相诸葛亮..."></textarea></div>
+        <div class="form-group"><label>API 地址</label><input type="text" id="agentApiBase" placeholder="https://api.deepseek.com/v1"><div class="hint">兼容 OpenAI 格式的 API 地址</div></div>
+        <div class="form-group"><label>API Key</label><input type="password" id="agentApiKey" placeholder="sk-..."></div>
         <div class="form-row">
-            <div class="form-group">
-                <label>模型名称</label>
-                <input type="text" id="agentModel" placeholder="deepseek-chat">
-            </div>
-            <div class="form-group">
-                <label>排序（数字小的先回复）</label>
-                <input type="number" id="agentSort" placeholder="0" value="0">
-            </div>
+            <div class="form-group"><label>模型名称</label><input type="text" id="agentModel" placeholder="deepseek-chat"></div>
+            <div class="form-group"><label>排序</label><input type="number" id="agentSort" placeholder="0" value="0"></div>
         </div>
         <div class="modal-actions">
             <button class="cancel-btn" onclick="closeModal()">取消</button>
@@ -383,7 +172,6 @@
         </div>
     </div>
 </div>
-
 <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
         <p id="confirmText">确定要执行此操作吗？</p>
@@ -393,72 +181,72 @@
         </div>
     </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
 let agents = [];
 let isStreaming = false;
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadAgents();
-    loadMessages();
-    autoResizeTextarea();
-});
+document.addEventListener('DOMContentLoaded', () => { loadAgents(); loadMessages(); loadPresets(); autoResizeTextarea(); });
 
 function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', (tab === 'chat' && i === 0) || (tab === 'settings' && i === 1));
-    });
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', (tab === 'chat' && i === 0) || (tab === 'settings' && i === 1)));
     document.getElementById('panel-chat').classList.toggle('active', tab === 'chat');
     document.getElementById('panel-settings').classList.toggle('active', tab === 'settings');
-    if (tab === 'chat') scrollToBottom();
-    else renderAgentList();
+    if (tab === 'chat') scrollToBottom(); else { renderAgentList(); loadPresets(); }
+}
+
+// ========== 预设角色 ==========
+async function loadPresets() {
+    try {
+        const res = await fetch('/api/preset-agents');
+        const presets = await res.json();
+        const section = document.getElementById('presetSection');
+        const plist = document.getElementById('presetList');
+        if (presets.length === 0) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+        plist.innerHTML = presets.map(p => `
+            <div class="preset-card" onclick="addPreset('${p.id}')">
+                <span style="font-size:32px">${p.avatar}</span>
+                <div style="flex:1"><div style="font-weight:600;font-size:15px">${esc(p.name)}</div><div style="font-size:12px;color:var(--text-secondary)">${esc(p.model)}</div></div>
+                <button class="btn btn-send" style="font-size:12px">添加</button>
+            </div>
+        `).join('');
+    } catch (e) {}
+}
+
+async function addPreset(id) {
+    try {
+        const res = await fetch('/api/preset-agents', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id}) });
+        const data = await res.json();
+        if (res.ok) { toast(data.message); await loadAgents(); renderAgentList(); loadPresets(); }
+        else toast(data.error || '添加失败');
+    } catch (e) { toast('添加失败'); }
 }
 
 // ========== 角色管理 ==========
 async function loadAgents() {
-    try {
-        const res = await fetch('/api/agents');
-        agents = await res.json();
-        renderMembersBar();
-    } catch (e) { console.error('加载角色失败:', e); }
+    try { const res = await fetch('/api/agents'); agents = await res.json(); renderMembersBar(); } catch (e) {}
 }
 
 function renderMembersBar() {
     const bar = document.getElementById('membersBar');
-    if (agents.length === 0) {
-        bar.innerHTML = '<span class="member-count">还没有 AI 成员，去群设置添加吧 →</span>';
-        return;
-    }
-    let html = `<span class="member-count">${agents.length} 位 AI</span>`;
-    html += '<span class="member-chip"><span class="avatar">😊</span> 我</span>';
-    agents.forEach(a => {
-        html += `<span class="member-chip"><span class="avatar">${a.avatar}</span> ${a.name}</span>`;
-    });
+    if (agents.length === 0) { bar.innerHTML = '<span class="member-count">还没有 AI 成员，去群设置添加吧 →</span>'; return; }
+    let html = `<span class="member-count">${agents.length} 位 AI</span><span class="member-chip"><span class="avatar">😊</span> 我</span>`;
+    agents.forEach(a => html += `<span class="member-chip"><span class="avatar">${a.avatar}</span> ${a.name}</span>`);
     bar.innerHTML = html;
 }
 
 function renderAgentList() {
     const list = document.getElementById('agentList');
-    if (agents.length === 0) {
-        list.innerHTML = `<div class="empty-state"><div class="emoji">🤖</div><p>还没有 AI 成员<br>点击上方按钮添加</p></div>`;
-        return;
-    }
+    if (agents.length === 0) { list.innerHTML = '<div class="empty-state"><div class="emoji">🤖</div><p>还没有 AI 成员<br>点击上方按钮添加</p></div>'; return; }
     list.innerHTML = agents.map(a => `
         <div class="agent-card">
             <div class="agent-card-header">
                 <span class="agent-card-avatar">${a.avatar}</span>
-                <div class="agent-card-info">
-                    <div class="agent-card-name">${escapeHtml(a.name)}</div>
-                    <div class="agent-card-model">${escapeHtml(a.model)} · ${escapeHtml(a.api_base)}</div>
-                </div>
-                <div class="agent-card-actions">
-                    <button class="edit-btn" onclick="openEditModal('${a.id}')">编辑</button>
-                    <button class="delete-btn" onclick="deleteAgent('${a.id}', '${escapeHtml(a.name)}')">删除</button>
-                </div>
+                <div class="agent-card-info"><div class="agent-card-name">${esc(a.name)}</div><div class="agent-card-model">${esc(a.model)} · ${esc(a.api_base)}</div></div>
+                <div class="agent-card-actions"><button class="edit-btn" onclick="openEditModal('${a.id}')">编辑</button><button class="delete-btn" onclick="deleteAgent('${a.id}','${esc(a.name)}')">删除</button></div>
             </div>
-            <div class="agent-card-prompt">${escapeHtml(a.system_prompt || '（未设置人设）')}</div>
+            <div class="agent-card-prompt">${esc(a.system_prompt || '（未设置人设）')}</div>
         </div>
     `).join('');
 }
@@ -466,28 +254,21 @@ function renderAgentList() {
 function openAddModal() {
     document.getElementById('modalTitle').textContent = '添加 AI 成员';
     document.getElementById('editAgentId').value = '';
-    document.getElementById('agentName').value = '';
-    document.getElementById('agentAvatar').value = '🤖';
-    document.getElementById('agentPrompt').value = '';
-    document.getElementById('agentApiBase').value = 'https://api.deepseek.com/v1';
-    document.getElementById('agentApiKey').value = '';
-    document.getElementById('agentModel').value = 'deepseek-chat';
+    document.getElementById('agentName').value = ''; document.getElementById('agentAvatar').value = '🤖';
+    document.getElementById('agentPrompt').value = ''; document.getElementById('agentApiBase').value = 'https://api.deepseek.com/v1';
+    document.getElementById('agentApiKey').value = ''; document.getElementById('agentModel').value = 'deepseek-chat';
     document.getElementById('agentSort').value = '0';
     document.getElementById('agentModal').classList.add('show');
 }
 
 function openEditModal(id) {
-    const agent = agents.find(a => a.id === id);
-    if (!agent) return;
+    const a = agents.find(x => x.id === id); if (!a) return;
     document.getElementById('modalTitle').textContent = '编辑 AI 成员';
-    document.getElementById('editAgentId').value = agent.id;
-    document.getElementById('agentName').value = agent.name;
-    document.getElementById('agentAvatar').value = agent.avatar;
-    document.getElementById('agentPrompt').value = agent.system_prompt || '';
-    document.getElementById('agentApiBase').value = agent.api_base;
-    document.getElementById('agentApiKey').value = agent.api_key;
-    document.getElementById('agentModel').value = agent.model;
-    document.getElementById('agentSort').value = agent.sort_order || 0;
+    document.getElementById('editAgentId').value = a.id;
+    document.getElementById('agentName').value = a.name; document.getElementById('agentAvatar').value = a.avatar;
+    document.getElementById('agentPrompt').value = a.system_prompt || ''; document.getElementById('agentApiBase').value = a.api_base;
+    document.getElementById('agentApiKey').value = a.api_key; document.getElementById('agentModel').value = a.model;
+    document.getElementById('agentSort').value = a.sort_order || 0;
     document.getElementById('agentModal').classList.add('show');
 }
 
@@ -502,338 +283,147 @@ async function saveAgent() {
         api_base: document.getElementById('agentApiBase').value.trim() || 'https://api.deepseek.com/v1',
         api_key: document.getElementById('agentApiKey').value.trim(),
         model: document.getElementById('agentModel').value.trim() || 'deepseek-chat',
-        sort_order: parseInt(document.getElementById('agentSort').value) || 0,
-        enabled: 1,
+        sort_order: parseInt(document.getElementById('agentSort').value) || 0, enabled: 1,
     };
-    if (!data.api_key) { showToast('请填写 API Key'); return; }
+    if (!data.api_key) { toast('请填写 API Key'); return; }
     try {
-        if (id) {
-            await fetch(`/api/agents/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-            showToast('更新成功');
-        } else {
-            await fetch('/api/agents', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-            showToast('添加成功');
-        }
-        closeModal();
-        await loadAgents();
-        renderAgentList();
-    } catch (e) { showToast('保存失败: ' + e.message); }
+        if (id) await fetch(`/api/agents/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        else await fetch('/api/agents', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        toast(id ? '更新成功' : '添加成功'); closeModal(); await loadAgents(); renderAgentList(); loadPresets();
+    } catch (e) { toast('保存失败'); }
 }
 
 function deleteAgent(id, name) {
     showConfirm(`确定删除 "${name}" 吗？`, async () => {
-        try {
-            await fetch(`/api/agents/${id}`, { method: 'DELETE' });
-            showToast('已删除');
-            await loadAgents();
-            renderAgentList();
-        } catch (e) { showToast('删除失败'); }
+        try { await fetch(`/api/agents/${id}`, { method:'DELETE' }); toast('已删除'); await loadAgents(); renderAgentList(); loadPresets(); } catch (e) { toast('删除失败'); }
     });
 }
 
-// ========== 聊天功能 ==========
+// ========== 聊天 ==========
 async function loadMessages() {
-    try {
-        const res = await fetch('/api/messages?session_id=default');
-        const messages = await res.json();
-        renderMessages(messages);
-    } catch (e) { console.error('加载消息失败:', e); }
+    try { const res = await fetch('/api/messages?session_id=default'); renderMessages(await res.json()); } catch (e) {}
 }
 
-function renderMessages(messages) {
+function renderMessages(msgs) {
     const area = document.getElementById('chatArea');
     const empty = document.getElementById('emptyChat');
-    if (messages.length === 0) {
-        area.innerHTML = '';
-        area.appendChild(empty);
-        empty.style.display = 'block';
-        return;
-    }
-    empty.style.display = 'none';
-    area.innerHTML = messages.map(m => createMessageHTML(m)).join('');
-    scrollToBottom();
+    if (msgs.length === 0) { area.innerHTML = ''; area.appendChild(empty); empty.style.display = 'block'; return; }
+    empty.style.display = 'none'; area.innerHTML = msgs.map(m => msgHTML(m)).join(''); scrollToBottom();
 }
 
-function createMessageHTML(msg) {
-    const role = msg.role;
-    const avatar = msg.agent_avatar || '😊';
-    const name = msg.agent_name || '我';
-    const content = escapeHtml(msg.content);
-    if (role === 'system') {
-        return `<div class="message system"><div class="msg-body"><div class="msg-bubble">${content}</div></div></div>`;
-    }
-    const isUser = role === 'user';
-    return `
-        <div class="message ${isUser ? 'user' : 'assistant'}">
-            <div class="msg-avatar">${avatar}</div>
-            <div class="msg-body">
-                <div class="msg-name">${escapeHtml(name)}</div>
-                <div class="msg-bubble">${content}</div>
-            </div>
-        </div>`;
+function msgHTML(m) {
+    if (m.role === 'system') return `<div class="message system"><div class="msg-body"><div class="msg-bubble">${esc(m.content)}</div></div></div>`;
+    return `<div class="message ${m.role === 'user' ? 'user' : 'assistant'}"><div class="msg-avatar">${m.agent_avatar || '😊'}</div><div class="msg-body"><div class="msg-name">${esc(m.agent_name || '我')}</div><div class="msg-bubble">${esc(m.content)}</div></div></div>`;
 }
 
-function addMessageToChat(msg) {
-    const area = document.getElementById('chatArea');
-    const empty = document.getElementById('emptyChat');
-    empty.style.display = 'none';
-    area.insertAdjacentHTML('beforeend', createMessageHTML(msg));
-    scrollToBottom();
+function addMsg(m) { document.getElementById('emptyChat').style.display = 'none'; document.getElementById('chatArea').insertAdjacentHTML('beforeend', msgHTML(m)); scrollToBottom(); }
+
+function addThinking(id, name, avatar) {
+    document.getElementById('emptyChat').style.display = 'none';
+    const d = document.createElement('div'); d.className = 'message assistant'; d.id = 'thinking-' + id;
+    d.innerHTML = `<div class="msg-avatar">${avatar}</div><div class="msg-body"><div class="msg-name">${esc(name)}</div><div class="msg-bubble"><span class="msg-thinking">正在思考中...</span></div></div>`;
+    document.getElementById('chatArea').appendChild(d); scrollToBottom();
 }
 
-function addRoundIndicator(round) {
-    const area = document.getElementById('chatArea');
-    area.insertAdjacentHTML('beforeend', `<div class="round-indicator">— 第 ${round} 轮 —</div>`);
-    scrollToBottom();
+function rmThinking(id) { const d = document.getElementById('thinking-' + id); if (d) d.remove(); }
+
+function addStream(id, name, avatar) {
+    rmThinking(id); document.getElementById('emptyChat').style.display = 'none';
+    const d = document.createElement('div'); d.className = 'message assistant'; d.id = 'stream-' + id;
+    d.innerHTML = `<div class="msg-avatar">${avatar}</div><div class="msg-body"><div class="msg-name">${esc(name)}</div><div class="msg-bubble"><span class="msg-typing"></span></div></div>`;
+    document.getElementById('chatArea').appendChild(d); scrollToBottom();
 }
 
-// 思考状态气泡
-function addThinkingBubble(msgId, agentName, agentAvatar) {
-    const area = document.getElementById('chatArea');
-    const empty = document.getElementById('emptyChat');
-    empty.style.display = 'none';
-    const div = document.createElement('div');
-    div.className = 'message assistant';
-    div.id = `thinking-${msgId}`;
-    div.innerHTML = `
-        <div class="msg-avatar">${agentAvatar}</div>
-        <div class="msg-body">
-            <div class="msg-name">${escapeHtml(agentName)}</div>
-            <div class="msg-bubble"><span class="msg-thinking">正在思考中...</span></div>
-        </div>`;
-    area.appendChild(div);
-    scrollToBottom();
+function appendStream(id, content) {
+    const d = document.getElementById('stream-' + id); if (!d) return;
+    const b = d.querySelector('.msg-bubble'); const t = b.querySelector('.msg-typing'); if (t) t.remove();
+    b.appendChild(document.createTextNode(content));
+    const c = document.createElement('span'); c.className = 'msg-typing'; b.appendChild(c); scrollToBottom();
 }
 
-function removeThinkingBubble(msgId) {
-    const div = document.getElementById(`thinking-${msgId}`);
-    if (div) div.remove();
-}
-
-function addStreamingBubble(msgId, agentId, agentName, agentAvatar) {
-    removeThinkingBubble(msgId);
-    const area = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = 'message assistant';
-    div.id = `stream-${msgId}`;
-    div.innerHTML = `
-        <div class="msg-avatar">${agentAvatar}</div>
-        <div class="msg-body">
-            <div class="msg-name">${escapeHtml(agentName)}</div>
-            <div class="msg-bubble"><span class="msg-typing"></span></div>
-        </div>`;
-    area.appendChild(div);
-    scrollToBottom();
-    return div;
-}
-
-function appendToStreamBubble(msgId, content) {
-    const div = document.getElementById(`stream-${msgId}`);
-    if (!div) return;
-    const bubble = div.querySelector('.msg-bubble');
-    const typing = bubble.querySelector('.msg-typing');
-    if (typing) typing.remove();
-    bubble.appendChild(document.createTextNode(content));
-    const cursor = document.createElement('span');
-    cursor.className = 'msg-typing';
-    bubble.appendChild(cursor);
-    scrollToBottom();
-}
-
-function finishStreamBubble(msgId) {
-    const div = document.getElementById(`stream-${msgId}`);
-    if (!div) return;
-    const typing = div.querySelector('.msg-typing');
-    if (typing) typing.remove();
-}
+function endStream(id) { const d = document.getElementById('stream-' + id); if (d) { const t = d.querySelector('.msg-typing'); if (t) t.remove(); } }
 
 // ========== 发送消息 ==========
 async function sendMessage() {
-    const input = document.getElementById('msgInput');
-    const content = input.value.trim();
-    if (!content || isStreaming) return;
-    input.value = '';
-    input.style.height = 'auto';
-
-    addMessageToChat({ role: 'user', agent_name: '我', agent_avatar: '😊', content });
-    setStreaming(true);
-
+    const input = document.getElementById('msgInput'); const content = input.value.trim();
+    if (!content || isStreaming) return; input.value = ''; input.style.height = 'auto';
+    addMsg({ role:'user', agent_name:'我', agent_avatar:'😊', content }); setStreaming(true);
     try {
-        const res = await fetch('/api/messages', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ content, session_id: 'default' }),
-        });
+        const res = await fetch('/api/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({content, session_id:'default'}) });
         const ct = res.headers.get('content-type');
-        if (!ct || !ct.includes('text/event-stream')) {
-            const data = await res.json();
-            if (data.ai_count === 0) {
-                addMessageToChat({ role:'system', agent_name:'系统', agent_avatar:'📢', content:'还没有 AI 成员哦，去群设置添加吧！' });
-            }
-            setStreaming(false);
-            return;
-        }
+        if (!ct || !ct.includes('text/event-stream')) { const d = await res.json(); if (d.ai_count === 0) addMsg({role:'system',agent_name:'系统',agent_avatar:'📢',content:'还没有 AI 成员哦，去群设置添加吧！'}); setStreaming(false); return; }
         await processSSE(res);
-    } catch (e) {
-        addMessageToChat({ role:'system', agent_name:'系统', agent_avatar:'⚠️', content:'发送失败: ' + e.message });
-    }
+    } catch (e) { addMsg({role:'system',agent_name:'系统',agent_avatar:'⚠️',content:'发送失败: '+e.message}); }
     setStreaming(false);
 }
 
 // ========== 自动群聊 ==========
 function startAutoChat() {
-    const topic = document.getElementById('topicInput').value.trim();
-    setStreaming(true);
-
-    document.getElementById('autoBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'block';
+    const topic = document.getElementById('topicInput').value.trim(); setStreaming(true);
+    document.getElementById('autoBtn').style.display = 'none'; document.getElementById('stopBtn').style.display = 'block';
     document.getElementById('topicInput').disabled = true;
-
-    fetch('/api/auto-chat', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ session_id: 'default', topic, max_rounds: 15 }),
-    }).then(res => {
-        if (!res.ok) return res.json().then(data => { throw new Error(data.error || '启动失败'); });
-        return processSSE(res);
-    }).then(() => {
-        stopAutoChatUI();
-    }).catch(e => {
-        addMessageToChat({ role:'system', agent_name:'系统', agent_avatar:'⚠️', content:'错误: ' + e.message });
-        stopAutoChatUI();
-    });
+    fetch('/api/auto-chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default', topic, max_rounds:15}) })
+    .then(res => { if (!res.ok) return res.json().then(d => { throw new Error(d.error); }); return processSSE(res); })
+    .then(() => stopUI()).catch(e => { addMsg({role:'system',agent_name:'系统',agent_avatar:'⚠️',content:'错误: '+e.message}); stopUI(); });
 }
 
 async function stopAutoChat() {
-    try {
-        await fetch('/api/stop-chat', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ session_id: 'default' }),
-        });
-    } catch (e) { /* ignore */ }
-    stopAutoChatUI();
+    try { await fetch('/api/stop-chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default'}) }); } catch (e) {}
+    stopUI();
 }
 
-function stopAutoChatUI() {
-    setStreaming(false);
-    document.getElementById('autoBtn').style.display = 'block';
-    document.getElementById('stopBtn').style.display = 'none';
-    document.getElementById('topicInput').disabled = false;
-}
+function stopUI() { setStreaming(false); document.getElementById('autoBtn').style.display = 'block'; document.getElementById('stopBtn').style.display = 'none'; document.getElementById('topicInput').disabled = false; }
 
-function setStreaming(val) {
-    isStreaming = val;
-    document.getElementById('sendBtn').disabled = val;
-    document.getElementById('autoBtn').disabled = val;
-}
+function setStreaming(v) { isStreaming = v; document.getElementById('sendBtn').disabled = v; document.getElementById('autoBtn').disabled = v; }
 
-// ========== SSE 处理 ==========
+// ========== SSE ==========
 async function processSSE(res) {
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '';
     while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
+        const { done, value } = await reader.read(); if (done) break;
+        buf += dec.decode(value, { stream: true }); const lines = buf.split('\n'); buf = lines.pop() || '';
         for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const jsonStr = line.slice(6).trim();
-            if (!jsonStr) continue;
+            if (!line.startsWith('data: ')) continue; const s = line.slice(6).trim(); if (!s) continue;
             try {
-                const data = JSON.parse(jsonStr);
-                switch (data.type) {
-                    case 'agent_thinking':
-                        addThinkingBubble(data.msg_id, data.agent_name, data.agent_avatar);
-                        break;
-                    case 'agent_start':
-                        addStreamingBubble(data.msg_id, data.agent_id, data.agent_name, data.agent_avatar);
-                        break;
-                    case 'agent_chunk':
-                        appendToStreamBubble(data.msg_id, data.content);
-                        break;
-                    case 'agent_end':
-                        finishStreamBubble(data.msg_id);
-                        break;
-                    case 'agent_error':
-                        removeThinkingBubble(data.msg_id);
-                        finishStreamBubble(data.msg_id);
-                        appendToStreamBubble(data.msg_id, data.content);
-                        break;
-                    case 'round':
-                        addRoundIndicator(data.round);
-                        break;
-                    case 'all_done':
-                        break;
-                }
-            } catch (e) { /* ignore */ }
+                const d = JSON.parse(s);
+                if (d.type === 'agent_thinking') addThinking(d.msg_id, d.agent_name, d.agent_avatar);
+                else if (d.type === 'agent_start') addStream(d.msg_id, d.agent_name, d.agent_avatar);
+                else if (d.type === 'agent_chunk') appendStream(d.msg_id, d.content);
+                else if (d.type === 'agent_end') endStream(d.msg_id);
+                else if (d.type === 'agent_error') { rmThinking(d.msg_id); endStream(d.msg_id); appendStream(d.msg_id, d.content); }
+                else if (d.type === 'round') { const ri = document.createElement('div'); ri.className = 'round-indicator'; ri.textContent = `— 第 ${d.round} 轮 —`; document.getElementById('chatArea').appendChild(ri); scrollToBottom(); }
+            } catch (e) {}
         }
     }
 }
 
 async function newTopic() {
-    if (isStreaming) { showToast('请等待当前对话结束'); return; }
-    try {
-        await fetch('/api/clear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default'}) });
-        document.getElementById('chatArea').innerHTML = `
-            <div class="empty-state" id="emptyChat">
-                <div class="emoji">💬</div>
-                <p>新话题已开启<br>输入消息或点🎭群聊开始吧！</p>
-            </div>`;
-        showToast('已开启新话题');
-    } catch (e) { showToast('操作失败'); }
+    if (isStreaming) { toast('请等待当前对话结束'); return; }
+    try { await fetch('/api/clear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default'}) });
+    document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyChat"><div class="emoji">💬</div><p>新话题已开启<br>输入消息或点🎭群聊开始吧！</p></div>'; toast('已开启新话题'); } catch (e) { toast('操作失败'); }
 }
 
 function clearChat() {
     showConfirm('确定清空所有聊天记录吗？', async () => {
-        try {
-            await fetch('/api/clear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default'}) });
-            document.getElementById('chatArea').innerHTML = `
-                <div class="empty-state" id="emptyChat">
-                    <div class="emoji">💬</div>
-                    <p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p>
-                </div>`;
-            showToast('聊天记录已清空');
-        } catch (e) { showToast('清空失败'); }
+        try { await fetch('/api/clear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:'default'}) });
+        document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyChat"><div class="emoji">💬</div><p>还没有消息<br>输入消息发送，或点🎭群聊让 AI 自己聊</p></div>'; toast('聊天记录已清空'); } catch (e) { toast('清空失败'); }
     });
 }
 
 // ========== 工具函数 ==========
-function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-}
-function scrollToBottom() {
-    const area = document.getElementById('chatArea');
-    requestAnimationFrame(() => { area.scrollTop = area.scrollHeight; });
-}
-function autoResizeTextarea() {
-    const t = document.getElementById('msgInput');
-    t.addEventListener('input', () => { t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; });
-}
-function escapeHtml(str) {
-    if (!str) return '';
-    const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
-}
-function showToast(msg) {
-    const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 2000);
-}
-function showConfirm(text, onConfirm) {
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function scrollToBottom() { const a = document.getElementById('chatArea'); requestAnimationFrame(() => a.scrollTop = a.scrollHeight); }
+function autoResizeTextarea() { const t = document.getElementById('msgInput'); t.addEventListener('input', () => { t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; }); }
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
+function showConfirm(text, fn) {
     document.getElementById('confirmText').textContent = text;
     document.getElementById('confirmOverlay').classList.add('show');
-    const okBtn = document.getElementById('confirmOkBtn');
-    const newBtn = okBtn.cloneNode(true);
-    okBtn.parentNode.replaceChild(newBtn, okBtn);
-    newBtn.id = 'confirmOkBtn';
-    newBtn.addEventListener('click', () => { closeConfirm(); onConfirm(); });
+    const ok = document.getElementById('confirmOkBtn'); const n = ok.cloneNode(true); ok.parentNode.replaceChild(n, ok); n.id = 'confirmOkBtn';
+    n.addEventListener('click', () => { closeConfirm(); fn(); });
 }
 function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('show'); }
-document.getElementById('agentModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+document.getElementById('agentModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 </script>
 </body>
 </html>

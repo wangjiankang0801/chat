@@ -53,44 +53,61 @@ def init_db():
 
 init_db()
 
-# ========== 初始化默认 AI 角色 ==========
-def init_default_agents():
-    conn = get_db()
-    count = conn.execute('SELECT COUNT(*) FROM agents').fetchone()[0]
-    if count == 0:
-        # 只在数据库为空时创建默认角色
-        defaults = [
-            {
-                'id': 'default-1',
-                'name': '小助手',
-                'avatar': '🤖',
-                'system_prompt': '你是一个友善热情的AI助手，名叫小助手。你说话风格活泼开朗，喜欢用表情符号。你擅长解答各种问题，总是乐于帮助别人。在群聊中你会主动和其他人互动。',
-                'api_base': 'https://api.deepseek.com/v1',
-                'api_key': 'sk-78efc6fbedaf402e9ccd85487c00ac2b',
-                'model': 'deepseek-chat',
-                'sort_order': 0,
-            },
-            {
-                'id': 'default-2',
-                'name': '小智',
-                'avatar': '🧠',
-                'system_prompt': '你是一个沉稳睿智的AI助手，名叫小智。你说话风格冷静理性，喜欢深入分析问题。你有丰富的知识储备，在群聊中你会从不同角度思考问题，给出有深度的见解。',
-                'api_base': 'https://api.deepseek.com/v1',
-                'api_key': 'sk-174ccba7f307416aa916e4234b569143',
-                'model': 'deepseek-chat',
-                'sort_order': 1,
-            },
-        ]
-        for a in defaults:
-            conn.execute(
-                'INSERT INTO agents (id, name, avatar, system_prompt, api_base, api_key, model, sort_order) VALUES (?,?,?,?,?,?,?,?)',
-                (a['id'], a['name'], a['avatar'], a['system_prompt'], a['api_base'], a['api_key'], a['model'], a['sort_order'])
-            )
-        conn.commit()
-        print("[Init] ✅ 已创建 2 个默认 AI 角色：小助手、小智")
-    conn.close()
+# ========== 预设 AI 角色模板（可选添加） ==========
+DEFAULT_AGENTS = [
+    {
+        'id': 'default-1',
+        'name': '小助手',
+        'avatar': '🤖',
+        'system_prompt': '你是一个友善热情的AI助手，名叫小助手。你说话风格活泼开朗，喜欢用表情符号。你擅长解答各种问题，总是乐于帮助别人。在群聊中你会主动和其他人互动。',
+        'api_base': 'https://api.deepseek.com/v1',
+        'api_key': 'sk-78efc6fbedaf402e9ccd85487c00ac2b',
+        'model': 'deepseek-chat',
+        'sort_order': 0,
+    },
+    {
+        'id': 'default-2',
+        'name': '小智',
+        'avatar': '🧠',
+        'system_prompt': '你是一个沉稳睿智的AI助手，名叫小智。你说话风格冷静理性，喜欢深入分析问题。你有丰富的知识储备，在群聊中你会从不同角度思考问题，给出有深度的见解。',
+        'api_base': 'https://api.deepseek.com/v1',
+        'api_key': 'sk-174ccba7f307416aa916e4234b569143',
+        'model': 'deepseek-chat',
+        'sort_order': 1,
+    },
+]
 
-init_default_agents()
+# 预设角色 API（列出可用的预设，前端可选择添加）
+@app.route('/api/preset-agents', methods=['GET'])
+def get_preset_agents():
+    """获取预设角色列表（不含已添加的）"""
+    conn = get_db()
+    existing = {row['id'] for row in conn.execute('SELECT id FROM agents').fetchall()}
+    conn.close()
+    presets = [a for a in DEFAULT_AGENTS if a['id'] not in existing]
+    return jsonify(presets)
+
+@app.route('/api/preset-agents', methods=['POST'])
+def add_preset_agent():
+    """添加指定的预设角色"""
+    data = request.json
+    agent_id = data.get('id')
+    preset = next((a for a in DEFAULT_AGENTS if a['id'] == agent_id), None)
+    if not preset:
+        return jsonify({'error': '预设角色不存在'}), 404
+    conn = get_db()
+    existing = conn.execute('SELECT id FROM agents WHERE id=?', (agent_id,)).fetchone()
+    if existing:
+        conn.close()
+        return jsonify({'error': '该角色已添加'}), 400
+    conn.execute(
+        'INSERT INTO agents (id, name, avatar, system_prompt, api_base, api_key, model, sort_order) VALUES (?,?,?,?,?,?,?,?)',
+        (preset['id'], preset['name'], preset['avatar'], preset['system_prompt'],
+         preset['api_base'], preset['api_key'], preset['model'], preset['sort_order'])
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'message': f"已添加 {preset['name']}", 'id': preset['id']})
 
 # ========== 页面路由 ==========
 

@@ -368,5 +368,9 @@ def call_ai_api_stream(agent, messages):
 
 
 if __name__ == '__main__':
+    print("=" * 50)
+    print("  AI 群聊 v1.1")
+    print("  预设角色: 小助手🤖 + 小智🧠")
+    print("=" * 50)
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)

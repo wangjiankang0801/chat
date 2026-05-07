@@ -17,7 +17,7 @@
 # 安装依赖
 pip install -r requirements.txt
 
-# 启动服务
+# 启动服务（会自动创建两个默认 AI 角色）
 python app.py
 
 # 访问 http://localhost:5000

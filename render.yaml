@@ -1,0 +1,15 @@
+# Render Blueprint：在 Render 后台用 "New +  Blueprint" 导入本文件即可一键部署
+# 免费档说明：Web Service 空闲 15 分钟后休眠，首次访问会慢几秒（冷启动）
+services:
+  - type: web
+    name: ai-companion
+    runtime: node
+    plan: free
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health

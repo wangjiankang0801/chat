@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { loadPersonas } from "../store/personas.js";
-import { getChat, appendMessage } from "../store/chats.js";
+import { loadChats, saveChats, getChat } from "../store/chats.js";
+import { loadSettings } from "../store/settings.js";
+import { getProviderMeta } from "../constants/providers.js";
+import { buildMessages } from "../lib/persona.js";
+import { streamChat } from "../api/chat.js";
 import { readFileAsDataURL, downscaleImage, isImageAvatar } from "../lib/image.js";
 import MessageBubble from "../components/MessageBubble.jsx";
 import EmojiPicker from "../components/EmojiPicker.jsx";
 
-const MAX_IMAGES = 3; // 单条消息最多图片数（微信风格）
+const MAX_IMAGES = 3;
 
 export default function ChatPage() {
   const personas = loadPersonas();
@@ -13,8 +17,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-  const [pending, setPending] = useState([]); // 待发送图片 [{ id, dataUrl }]
-  const [panel, setPanel] = useState(null);   // "emoji" | null
+  const [pending, setPending] = useState([]);
+  const [panel, setPanel] = useState(null);
   const listRef = useRef(null);
   const galleryRef = useRef(null);
   const cameraRef = useRef(null);
@@ -29,7 +33,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [messages, pending]);
+  }, [messages, pending, sending]);
 
   async function handleFiles(fileList) {
     for (const file of Array.from(fileList)) {
@@ -48,38 +52,77 @@ export default function ChatPage() {
     }
   }
 
-  function sendMessage(payload = {}) {
-    if (sending) return;
+  async function sendMessage(payload = {}) {
+    if (sending || !personaId) return;
     const content = (payload.content ?? text).trim();
     const images = payload.images ?? pending.map((p) => p.dataUrl);
     const sticker = payload.sticker ?? null;
-    if (!content && images.length === 0 && !sticker) return;
+    const userContent = sticker ? `[表情]${sticker}` : content;
+    if (!userContent && images.length === 0) return;
 
-    appendMessage(personaId, { role: "user", content, images, sticker, ts: Date.now() });
-    setMessages(getChat(personaId));
+    // —— 组装并保存用户消息 ——
+    const chats = loadChats();
+    const list = chats[personaId] ?? [];
+    const userMsg = { role: "user", content: userContent, images, ts: Date.now() };
+    const aiMsg = { role: "assistant", content: "", ts: Date.now() };
+    list.push(userMsg, aiMsg);
+    saveChats({ ...chats, [personaId]: list });
+    setMessages(list);
     setText("");
     setPending([]);
     setPanel(null);
     setSending(true);
 
-    // ============================================================
-    // 框架阶段占位：核心对话逻辑待实现
-    // 下一步实现：
-    //   1. 组装 messages：人设 system prompt + 风格 + 示例 + 历史 + 当前消息
-    //   2. 从 settings 取 provider/apiKey/model
-    //   3. POST /api/chat（SSE 流式），边收边追加 assistant 气泡
-    //   4. 图片：先只对支持多模态的模型传图，其余模型只传文字
-    // ============================================================
-    setTimeout(() => {
-      appendMessage(personaId, {
-        role: "assistant",
-        content: "（框架预览）核心对话逻辑还没接上。下一步会把你的人设 + 历史 + 消息发给模型，并流式显示回复。",
-        ts: Date.now(),
-        meta: true,
-      });
+    // —— 真实对话核心 ——
+    const settings = loadSettings();
+    const provider = settings.defaultProvider || "deepseek";
+    const meta = getProviderMeta(provider);
+    const apiKey = settings.apiKeys?.[provider];
+    const model = settings.defaultModel || meta?.defaultModel || "";
+    const baseUrl = provider === "custom" ? settings.customBaseUrl : undefined;
+
+    if (!apiKey) {
+      aiMsg.content = "（还没填 API Key：去「设置」页填入你的模型供应商 Key，就能开始真实对话了）";
+      aiMsg.meta = true;
+      saveChats({ ...loadChats(), [personaId]: list });
       setMessages(getChat(personaId));
       setSending(false);
-    }, 400);
+      return;
+    }
+    if (!model) {
+      aiMsg.content = "（还没填模型名：去「设置」页确认默认模型，例如 deepseek-v4-flash）";
+      aiMsg.meta = true;
+      saveChats({ ...loadChats(), [personaId]: list });
+      setMessages(getChat(personaId));
+      setSending(false);
+      return;
+    }
+
+    const history = messages.filter((m) => m !== userMsg);
+    const modelMessages = buildMessages({ persona, history, content: userContent, images, provider });
+
+    try {
+      let acc = "";
+      await streamChat({
+        provider,
+        apiKey,
+        baseUrl,
+        model,
+        messages: modelMessages,
+        onDelta: (t) => {
+          acc += t;
+          aiMsg.content = acc;
+          setMessages([...list]);
+        },
+      });
+      aiMsg.content = acc || "（没有收到回复，请重试）";
+    } catch (err) {
+      aiMsg.content = "";
+      list.push({ role: "assistant", content: `⚠️ ${err.message || "请求失败"}`, meta: true, ts: Date.now() });
+    }
+    saveChats({ ...loadChats(), [personaId]: list });
+    setMessages([...list]);
+    setSending(false);
   }
 
   return (
@@ -109,6 +152,7 @@ export default function ChatPage() {
         {messages.map((m, i) => (
           <MessageBubble key={i} message={m} avatar={persona?.avatar} />
         ))}
+        {sending && <div className="typing-dot">TA 正在输入…</div>}
       </div>
 
       {pending.length > 0 && (
@@ -133,29 +177,15 @@ export default function ChatPage() {
         <button className="icon-btn" title="相册" onClick={() => galleryRef.current?.click()}>📎</button>
         <button className="icon-btn" title="拍照" onClick={() => cameraRef.current?.click()}>📷</button>
         <button className={panel === "emoji" ? "icon-btn active" : "icon-btn"} title="表情" onClick={() => setPanel(panel === "emoji" ? null : "emoji")}>😊</button>
-        <input
-          ref={galleryRef}
-          type="file"
-          accept="image/*"
-          multiple
-          style={{ display: "none" }}
-          onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }}
-        />
-        <input
-          ref={cameraRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: "none" }}
-          onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }}
-        />
+        <input ref={galleryRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }} />
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }} />
         <input
           className="chat-input"
           placeholder={sending ? "TA 正在输入…" : "说点什么…"}
           value={text}
           disabled={sending}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && !sending && sendMessage()}
         />
         <button className="btn primary" onClick={() => sendMessage()} disabled={sending || (!text.trim() && pending.length === 0)}>
           {sending ? "…" : "发送"}

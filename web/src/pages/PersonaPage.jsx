@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { loadPersonas, savePersonas, emptyPersona } from "../store/personas.js";
 import { readFileAsDataURL, downscaleImage, isImageAvatar } from "../lib/image.js";
+import { parseChatText, detectSpeakers, buildPersonaFromTurns } from "../lib/importer.js";
 import PersonaCard from "../components/PersonaCard.jsx";
 import ImageCropModal from "../components/ImageCropModal.jsx";
 
@@ -8,9 +9,15 @@ const EMPTY_FORM = () => ({ ...emptyPersona(), examplesText: "" });
 
 export default function PersonaPage() {
   const [list, setList] = useState(loadPersonas());
-  const [form, setForm] = useState(null); // 编辑中的表单；null = 列表视图
-  const [cropSrc, setCropSrc] = useState(null); // 待裁剪的原图
+  const [form, setForm] = useState(null);        // 编辑中的表单；null = 列表视图
+  const [cropSrc, setCropSrc] = useState(null);  // 待裁剪的头像原图
+  const [importOpen, setImportOpen] = useState(false); // 导入弹窗
+  const [importText, setImportText] = useState("");
+  const [turns, setTurns] = useState([]);
+  const [speakers, setSpeakers] = useState([]);
+  const [personaSpeaker, setPersonaSpeaker] = useState("");
   const avatarFileRef = useRef(null);
+  const importFileRef = useRef(null);
 
   function persist(next) {
     savePersonas(next);
@@ -39,11 +46,43 @@ export default function PersonaPage() {
     if (!file || !file.type.startsWith("image/")) return;
     try {
       const dataUrl = await readFileAsDataURL(file);
-      const small = await downscaleImage(dataUrl, 1024, 0.9); // 压缩后再裁剪，省内存
+      const small = await downscaleImage(dataUrl, 1024, 0.9);
       setCropSrc(small);
     } catch {
       alert("图片读取失败：iPhone 的 HEIC 照片可能不支持，请先转成 JPEG/PNG 再试");
     }
+  }
+
+  // —— 聊天记录导入 ——
+  async function handleImportFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const text = await file.text();
+    setImportText(text);
+    applyImportText(text);
+  }
+
+  function applyImportText(text) {
+    const parsed = parseChatText(text);
+    setTurns(parsed);
+    const spk = detectSpeakers(parsed);
+    setSpeakers(spk);
+    setPersonaSpeaker(spk[0]?.name || "");
+  }
+
+  function handleGenerate() {
+    if (!personaSpeaker) {
+      alert("请选择 TA 是哪位说话人");
+      return;
+    }
+    const persona = buildPersonaFromTurns(turns, personaSpeaker);
+    persona.id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+    const next = [...list, persona];
+    persist(next);
+    setImportOpen(false);
+    setImportText("");
+    openEdit(persona);
   }
 
   function handleSave() {
@@ -73,6 +112,7 @@ export default function PersonaPage() {
     setForm(null);
   }
 
+  // —— 编辑视图 ——
   if (form) {
     return (
       <div className="page">
@@ -95,13 +135,7 @@ export default function PersonaPage() {
                 )}
               </div>
             </div>
-            <input
-              ref={avatarFileRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleAvatarFile}
-            />
+            <input ref={avatarFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatarFile} />
             <input value={isImageAvatar(form.avatar) ? "" : form.avatar} disabled={isImageAvatar(form.avatar)} onChange={(e) => setForm({ ...form, avatar: e.target.value || "🐱" })} placeholder="或用 emoji 当头像，如 🦊" />
           </label>
 
@@ -116,7 +150,6 @@ export default function PersonaPage() {
           <label>长期记忆 / 补充设定
             <textarea rows={3} value={form.memory || ""} onChange={(e) => setForm({ ...form, memory: e.target.value })} placeholder="TA 知道的关于你的事、共同经历等" />
           </label>
-          <p className="form-tip">💡 核心逻辑阶段会加「导入聊天记录文件」，自动提炼风格和示例对话到这里。</p>
           <button className="btn primary block" onClick={handleSave}>保存人设</button>
         </div>
 
@@ -132,11 +165,55 @@ export default function PersonaPage() {
     );
   }
 
+  // —— 导入弹窗 ——
+  if (importOpen) {
+    return (
+      <div className="page">
+        <header className="page-header">
+          <h1>导入聊天记录</h1>
+          <button className="btn ghost" onClick={() => setImportOpen(false)}>返回</button>
+        </header>
+        <div className="form">
+          <p className="form-tip">把你的聊天记录文本粘贴进来，或上传 .txt 文件。格式示例：</p>
+          <pre className="import-preview">2024/05/01 12:34 张三: 今天好累啊&#10;我：摸摸头，跟我说说～</pre>
+          <textarea
+            className="import-textarea"
+            placeholder="粘贴聊天记录，每行一条：&#10;说话人：内容&#10;（时间戳可有可无）"
+            value={importText}
+            onChange={(e) => { setImportText(e.target.value); applyImportText(e.target.value); }}
+          />
+          <button className="btn ghost" onClick={() => importFileRef.current?.click()}>📄 上传 .txt 文件</button>
+          <input ref={importFileRef} type="file" accept=".txt,text/plain" style={{ display: "none" }} onChange={handleImportFile} />
+
+          {speakers.length > 0 && (
+            <>
+              <label>TA 是哪位？（选择后自动生成人设）</label>
+              <div className="speaker-list">
+                {speakers.map((s) => (
+                  <label key={s.name} className={personaSpeaker === s.name ? "speaker-option selected" : "speaker-option"}>
+                    <input type="radio" name="speaker" checked={personaSpeaker === s.name} onChange={() => setPersonaSpeaker(s.name)} />
+                    {s.name}（{s.count} 条）
+                  </label>
+                ))}
+              </div>
+              <p className="form-tip">已解析 {turns.length} 条消息。生成后会打开人设编辑页，你可以再调整。</p>
+              <button className="btn primary block" onClick={handleGenerate}>生成人设</button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // —— 列表视图 ——
   return (
     <div className="page">
       <header className="page-header">
         <h1>人设</h1>
-        <button className="btn primary" onClick={openCreate}>＋ 新建</button>
+        <div className="header-actions">
+          <button className="btn ghost" onClick={() => setImportOpen(true)}>导入记录</button>
+          <button className="btn primary" onClick={openCreate}>＋ 新建</button>
+        </div>
       </header>
       {list.map((p) => (
         <PersonaCard

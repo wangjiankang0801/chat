@@ -8,3 +8,10 @@ export const PROVIDERS = [
   { id: "gemini", name: "Google Gemini", baseUrl: "https://generativelanguage.googleapis.com/v1beta", type: "gemini", models: ["gemini-2.5-flash", "gemini-2.5-pro"] },
   { id: "custom", name: "自定义（OpenAI 兼容）", baseUrl: "", type: "openai-compatible", models: [] },
 ];
+
+// 默认支持多模态（看图）的供应商；其它供应商只发文字
+export const VISION_PROVIDERS = ["openai", "anthropic", "gemini"];
+
+export function getProviderMeta(id) {
+  return PROVIDERS.find((p) => p.id === id) ?? null;
+}

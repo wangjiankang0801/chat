@@ -9,7 +9,7 @@ export const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "15mb" }));
 
 // 健康检查（Render 可用它确认服务存活）
 app.get("/api/health", (_req, res) => {

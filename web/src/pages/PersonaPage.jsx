@@ -16,6 +16,13 @@ export default function PersonaPage() {
   const [turns, setTurns] = useState([]);
   const [speakers, setSpeakers] = useState([]);
   const [personaSpeaker, setPersonaSpeaker] = useState("");
+
+  // —— 导入模式：chat=聊天记录, prompt=已有提示词 ——
+  const [importMode, setImportMode] = useState("chat");
+  const [promptText, setPromptText] = useState("");
+  const [promptName, setPromptName] = useState("");
+  const [promptExamples, setPromptExamples] = useState("");
+  const [promptMemory, setPromptMemory] = useState("");
   const avatarFileRef = useRef(null);
   const importFileRef = useRef(null);
 
@@ -82,6 +89,40 @@ export default function PersonaPage() {
     persist(next);
     setImportOpen(false);
     setImportText("");
+    openEdit(persona);
+  }
+
+  function handleCreateFromPrompt() {
+    const sp = (promptText || "").trim();
+    if (!sp) {
+      alert("请先粘贴你训练好的提示词");
+      return;
+    }
+    const examples = [];
+    (promptExamples || "")
+      .split(/\n{2,}|\n(?=用户：)/)
+      .map((block) => block.trim())
+      .filter(Boolean)
+      .forEach((block) => {
+        const u = block.match(/用户[：:]\s*(.+)/);
+        const a = block.match(/TA[：:]\s*(.+)/);
+        if (u && a) examples.push({ user: u[1].trim(), assistant: a[1].trim() });
+      });
+    const persona = {
+      ...emptyPersona(),
+      name: (promptName || "").trim() || "新角色",
+      description: "由已训练提示词创建",
+      systemPrompt: sp,
+      examples,
+      memory: (promptMemory || "").trim(),
+    };
+    const next = [...list, persona];
+    persist(next);
+    setImportOpen(false);
+    setPromptText("");
+    setPromptName("");
+    setPromptExamples("");
+    setPromptMemory("");
     openEdit(persona);
   }
 
@@ -170,9 +211,14 @@ export default function PersonaPage() {
     return (
       <div className="page">
         <header className="page-header">
-          <h1>导入聊天记录</h1>
+          <h1>导入人设</h1>
           <button className="btn ghost" onClick={() => setImportOpen(false)}>返回</button>
         </header>
+        <div className="import-tabs">
+          <button className={importMode === "chat" ? "import-tab active" : "import-tab"} onClick={() => setImportMode("chat")}>📄 聊天记录</button>
+          <button className={importMode === "prompt" ? "import-tab active" : "import-tab"} onClick={() => setImportMode("prompt")}>✨ 已有提示词</button>
+        </div>
+        {importMode === "chat" ? (
         <div className="form">
           <p className="form-tip">把你的聊天记录文本粘贴进来，或上传 .txt 文件。格式示例：</p>
           <pre className="import-preview">2024/05/01 12:34 张三: 今天好累啊&#10;我：摸摸头，跟我说说～</pre>
@@ -201,6 +247,22 @@ export default function PersonaPage() {
             </>
           )}
         </div>
+        ) : (
+        <div className="form">
+          <p className="form-tip">直接粘贴你训练好的提示词（启发式提炼 / 角色设定 / System Prompt），聊天时会整段注入。</p>
+          <label>角色名字 <input value={promptName} onChange={(e) => setPromptName(e.target.value)} placeholder="可留空，默认「新角色」" /></label>
+          <label>提示词内容（必填）
+            <textarea className="import-textarea" style={{ minHeight: 200 }} placeholder="把 AI 训练好的提示词整段粘贴到这里…" value={promptText} onChange={(e) => setPromptText(e.target.value)} />
+          </label>
+          <label>示例对话（可选，每段：用户：… 换行 TA：…，空行分隔）
+            <textarea rows={4} value={promptExamples} onChange={(e) => setPromptExamples(e.target.value)} placeholder={"用户：今天好累啊\nTA：摸摸头，跟我说说～"} />
+          </label>
+          <label>长期记忆 / 补充设定（可选）
+            <textarea rows={2} value={promptMemory} onChange={(e) => setPromptMemory(e.target.value)} placeholder="TA 知道的关于你的事、共同经历等" />
+          </label>
+          <button className="btn primary block" onClick={handleCreateFromPrompt}>创建人设</button>
+        </div>
+        )}
       </div>
     );
   }
@@ -211,7 +273,7 @@ export default function PersonaPage() {
       <header className="page-header">
         <h1>人设</h1>
         <div className="header-actions">
-          <button className="btn ghost" onClick={() => setImportOpen(true)}>导入记录</button>
+          <button className="btn ghost" onClick={() => setImportOpen(true)}>导入</button>
           <button className="btn primary" onClick={openCreate}>＋ 新建</button>
         </div>
       </header>

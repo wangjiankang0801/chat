@@ -1,5 +1,7 @@
-# Render Blueprint：在 Render 后台用 "New +  Blueprint" 导入本文件即可一键部署
+# Render Blueprint：在 Render 后台用 "New + Blueprint" 导入本文件即可一键部署
 # 免费档说明：Web Service 空闲 15 分钟后休眠，首次访问会慢几秒（冷启动）
+# 注意：不要在这里设置 NODE_ENV=production——它会在构建阶段让 npm 跳过 devDependencies（vite 就装不上）。
+# Render 对 Node 服务运行时会自动设置 NODE_ENV=production，无需手动配置。
 services:
   - type: web
     name: ai-companion
@@ -10,6 +12,4 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      - key: NODE_ENV
-        value: production
     healthCheckPath: /api/health
